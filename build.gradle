@@ -1,0 +1,11 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile "org.apache.commons:commons-csv:1.2"
+    testCompile "junit:junit:4.12"
+}
