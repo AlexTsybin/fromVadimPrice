@@ -1,7 +1,7 @@
 package ru.uss.costprice;
 
-import ru.uss.costprice.Command.Command;
-import ru.uss.costprice.Command.PrintSkuCost;
+import ru.uss.costprice.command.Command;
+import ru.uss.costprice.command.PrintSkuCost;
 
 import java.io.BufferedReader;
 import java.io.IOException;

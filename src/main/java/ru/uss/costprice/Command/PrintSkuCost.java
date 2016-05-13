@@ -1,4 +1,4 @@
-package ru.uss.costprice.Command;
+package ru.uss.costprice.command;
 
 /**
  * Created by Вадим on 13.05.2016.
