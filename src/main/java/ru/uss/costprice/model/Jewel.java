@@ -1,6 +1,7 @@
 package ru.uss.costprice.model;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class Jewel {
     private List<Gemstone> stones;
 
     public List<Gemstone> getStones() {
-        return stones;
+        return Collections.unmodifiableList(stones);
     }
 
     public Jewel(String sku, List<Gemstone> stones) {
@@ -33,6 +34,14 @@ public class Jewel {
         this.netWeight = netWeight;
         this.releaseDate = releaseDate;
         this.stones = stones;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
     }
 
     public double getWeghtPrecious() {
@@ -77,7 +86,8 @@ public class Jewel {
 
     @Override
     public String toString() {
-        return sku + "\t" +
+        return serialNumber + "\t" +
+                sku + "\t" +
                 countStones() + "\t" +
                 getWeghtKr17() + "\t" +
                 getWeghtKr57() + "\t" +

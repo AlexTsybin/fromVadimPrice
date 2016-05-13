@@ -1,12 +1,9 @@
 package ru.uss.costprice.parsing;
 
 import org.junit.Test;
-import ru.uss.costprice.model.Jewel;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 /**
  * Created by vadelic on 01.05.2016.
@@ -16,8 +13,8 @@ public class ParserTest {
     public void getSkuFromCsv() throws Exception {
         Parser parser = new Parser();
         Path path = Paths.get("list_series.csv");
-        List<Jewel> jewelList = parser.getSkuFromCsv(Files.newInputStream(path));
-        System.out.println(jewelList.size());
+       // List<Jewel> jewelList = parser.getSkuFromCsv(Files.newInputStream(path));
+     //   System.out.println(jewelList.size());
        // jewelList.forEach(s -> System.out.println(s));
     }
 
