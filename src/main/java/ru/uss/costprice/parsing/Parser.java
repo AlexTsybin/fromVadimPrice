@@ -63,6 +63,7 @@ public class Parser {
                 jewelMap.get(sku).add(jewel);
             } catch (IncorrectFormatGemstone e) {
                 incGemstone.add(rec);
+                System.out.println(rec.get(5));
 
             } catch (IncorrectFormatSku e) {
                 incSku.add(rec);
@@ -73,23 +74,25 @@ public class Parser {
         return jewelMap;
     }
 
+
+    public static String getSkuFromString(String line) throws IncorrectFormatSku {
+        Pattern pattern = Pattern.compile("\\d{2}-\\d{2}-.{2}\\d{2}-\\d{5}");
+        Matcher matcher = pattern.matcher(line);
+        if (!matcher.find())
+            throw new IncorrectFormatSku();
+        return matcher.group();
+    }
+
     private static Jewel convertToJewel(CSVRecord record) throws IncorrectFormatGemstone, IncorrectFormatSku {
 
         String sn = record.get(0);
-        Pattern pattern = Pattern.compile("\\d{2}-\\d{2}-.{2}\\d{2}-\\d{5}");
-        Matcher matcher = pattern.matcher(record.get(1));
-        String sku;
-        if (matcher.find())
-            sku = matcher.group();
-        else {
-            throw new IncorrectFormatSku();
-        }
+        String sku = getSkuFromString(record.get(1));
 
         double gross = Double.parseDouble(record.get(2).replace(',', '.'));
         double net = Double.parseDouble(record.get(3).replace(',', '.'));
         LocalDate date;
         try {
-            date = LocalDate.parse(record.get(4).substring(0, 9), DateTimeFormatter.ofPattern("dd.MM.yyyy  0:00:00"));
+            date = LocalDate.parse(record.get(4).substring(0, 10), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         } catch (Exception e) {
             date = null;
         }
@@ -107,7 +110,7 @@ public class Parser {
         return result;
     }
 
-    private static Gemstone createStone(String line) throws IncorrectFormatGemstone {
+    public static Gemstone createStone(String line) throws IncorrectFormatGemstone {
         try {
 
             List<String> listDescription = new ArrayList<>(Arrays.asList(line.trim().split(" ")));

@@ -1,5 +1,6 @@
 package ru.uss.costprice;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import ru.uss.costprice.model.Jewel;
 import ru.uss.costprice.parsing.Parser;
 
@@ -14,26 +15,15 @@ import java.util.Map;
  * Created by vadelic on 11.05.2016.
  */
 public class StartMenu {
-    private static Map<String, List<Jewel>> dataBase = new HashMap<>();
-    private static final String PATH = "/main/resources/list_series.csv";
 
-    static {
-        try {
-            dataBase = (Parser.getSkuFromCsv(Files.newInputStream(Paths.get(PATH))));
-        } catch (IOException e) {
-            System.out.println("Error loading BD");
-        }
-    }
-
-
+//    10-02-1200-10333
+//    TODO http://stackoverflow.com/questions/5915425/programmatically-reading-static-resources-from-my-java-webapp
     public static void main(String[] args) {
-
-        CommandExecutor.Operation operation = null;
-
+        CmdHelper.Operation operation;
         do {
-            operation = CommandExecutor.getOperation();
-            CommandExecutor.exec(operation);
+            operation = CmdHelper.getOperation();
+            CmdHelper.exec(operation);
 
-        } while (CommandExecutor.Operation.EXIT != operation);
+        } while (CmdHelper.Operation.EXIT != operation);
     }
 }

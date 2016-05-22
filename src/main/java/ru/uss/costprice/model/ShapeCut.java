@@ -1,7 +1,12 @@
 package ru.uss.costprice.model;
 
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by Вадим on 01.05.2016.
@@ -16,27 +21,35 @@ public enum ShapeCut {
     KR_57,
     KR_17,
     PEAR;
-    private static Map<String, ShapeCut> variable = new HashMap<>();
+    private static Map<String, ShapeCut> variable;
+
     static {
-        variable.put("баг",BAGUETTE);
-        variable.put("багет",BAGUETTE);
-        variable.put("груш",PEAR);
-        variable.put("груша",PEAR);
-        variable.put("кв",SQUARE);
-        variable.put("квадрат",SQUARE);
-        variable.put("кр",CIRCLE);
-        variable.put("круг",CIRCLE);
-        variable.put("кр17",KR_17);
-        variable.put("кр57",KR_57);
-        variable.put("м-з",MARQUIS);
-        variable.put("марк",MARQUIS);
-        variable.put("маркиз",MARQUIS);
-        variable.put("ов",OVAL);
-        variable.put("овал",OVAL);
-        variable.put("трилл",TRILLION);
+//        variable = loadWords("src/main/resources/ex_shapeCut.properties");
+        variable = loadWords("src/main/webapp/WEB-INF/ex_shapeCut.properties");
     }
 
-    public static ShapeCut getShapeCut(String name){
+    public static Map<String, ShapeCut> loadWords(String path) {
+        Map<String, ShapeCut> result = new HashMap<>();
+        try {
+            Properties properties = new Properties();
+            Reader reader = new InputStreamReader(Files.newInputStream(Paths.get(path)), Charset.defaultCharset());
+            properties.load(reader);
+
+            for (String name : properties.stringPropertyNames()) {
+                ShapeCut shapeCut = ShapeCut.valueOf(properties.getProperty(name));
+                result.put(name, shapeCut);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public static String getStr() {
+        return String.valueOf(variable.size());
+    }
+
+    public static ShapeCut getShapeCut(String name) {
         ShapeCut select = variable.get(name);
         //TODO check null
 //        if (select!=null)

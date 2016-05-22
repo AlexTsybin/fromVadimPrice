@@ -10,8 +10,8 @@ import java.util.List;
 public class Jewel {
     private String serialNumber;
     private String sku;
-    private Double grossWeight;
-    private Double netWeight;
+    private double grossWeight;
+    private double netWeight;
     private LocalDate releaseDate;
     private List<Gemstone> stones;
 
@@ -27,7 +27,7 @@ public class Jewel {
         this.stones = stones;
     }
 
-    public Jewel(String serialNumber, String sku, Double grossWeight, Double netWeight, LocalDate releaseDate, List<Gemstone> stones) {
+    public Jewel(String serialNumber, String sku, double grossWeight, double netWeight, LocalDate releaseDate, List<Gemstone> stones) {
         this.serialNumber = serialNumber;
         this.sku = sku;
         this.grossWeight = grossWeight;
@@ -44,7 +44,7 @@ public class Jewel {
         return serialNumber;
     }
 
-    public double getWeghtPrecious() {
+    public double getWeightPrecious() {
         double precious = 0;
         for (Gemstone stone : stones) {
             if (stone.getType() == TypeStone.SAPPHIRE ||
@@ -56,7 +56,7 @@ public class Jewel {
         return precious;
     }
 
-    public double getWeghtKr17() {
+    public double getWeightKr17() {
         double kr17 = 0;
         for (Gemstone stone : stones) {
             if (stone.getCut() == ShapeCut.KR_17) {
@@ -66,7 +66,7 @@ public class Jewel {
         return kr17;
     }
 
-    public double getWeghtKr57() {
+    public double getWeightKr57() {
         double kr57 = 0;
         for (Gemstone stone : stones) {
             if (stone.getCut() == ShapeCut.KR_57) {
@@ -76,7 +76,19 @@ public class Jewel {
         return kr57;
     }
 
-    public int countStones() {
+    public double getGrossWeight() {
+        return grossWeight;
+    }
+
+    public double getNetWeight() {
+        return netWeight;
+    }
+
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
+
+    public int getCountStones() {
         int countStones = 0;
         for (Gemstone stone : stones) {
             countStones += stone.getCount();
@@ -84,13 +96,20 @@ public class Jewel {
         return countStones;
     }
 
+    public double getCost(StockPrice stockPrice) {
+        double result = 0;
+// TODO: 21.05.2016
+
+        return result;
+    }
+
     @Override
     public String toString() {
         return serialNumber + "\t" +
                 sku + "\t" +
-                countStones() + "\t" +
-                getWeghtKr17() + "\t" +
-                getWeghtKr57() + "\t" +
-                getWeghtPrecious();
+                getCountStones() + "\t" +
+                getWeightKr17() + "\t" +
+                getWeightKr57() + "\t" +
+                getWeightPrecious();
     }
 }
