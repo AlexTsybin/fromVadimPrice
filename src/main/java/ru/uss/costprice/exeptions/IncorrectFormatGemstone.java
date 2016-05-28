@@ -5,4 +5,7 @@ package ru.uss.costprice.exeptions;
  */
 public class IncorrectFormatGemstone extends Throwable {
 
+    public IncorrectFormatGemstone(String line) {
+        super(line);
+    }
 }

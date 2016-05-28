@@ -12,37 +12,10 @@ public class Jewel {
     private String sku;
     private double grossWeight;
     private double netWeight;
+
+
     private LocalDate releaseDate;
     private List<Gemstone> stones;
-
-    public List<Gemstone> getStones() {
-        return Collections.unmodifiableList(stones);
-    }
-
-    public Jewel(String sku, List<Gemstone> stones) {
-        this.sku = sku;
-        this.serialNumber = "";
-        this.netWeight = 0.0;
-        this.grossWeight = 0.0;
-        this.stones = stones;
-    }
-
-    public Jewel(String serialNumber, String sku, double grossWeight, double netWeight, LocalDate releaseDate, List<Gemstone> stones) {
-        this.serialNumber = serialNumber;
-        this.sku = sku;
-        this.grossWeight = grossWeight;
-        this.netWeight = netWeight;
-        this.releaseDate = releaseDate;
-        this.stones = stones;
-    }
-
-    public String getSku() {
-        return sku;
-    }
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
 
     public double getWeightPrecious() {
         double precious = 0;
@@ -69,12 +42,76 @@ public class Jewel {
     public double getWeightKr57() {
         double kr57 = 0;
         for (Gemstone stone : stones) {
-            if (stone.getCut() == ShapeCut.KR_57) {
+            if (stone.getCut() == ShapeCut.KR_57 && stone.getSize() < 2.5f) {
                 kr57 += stone.getWeightCt();
             }
         }
         return kr57;
     }
+
+    public double getWeightKr57big() {
+        double kr57b = 0;
+        for (Gemstone stone : stones) {
+            if (stone.getCut() == ShapeCut.KR_57 && stone.getSize() >= 2.5f) {
+                kr57b += stone.getWeightCt();
+            }
+        }
+        return kr57b;
+    }
+
+    public int getCountStones() {
+        int countStones = 0;
+        for (Gemstone stone : stones) {
+            countStones += stone.getCount();
+        }
+        return countStones;
+    }
+
+    public List<Gemstone> getStones() {
+        return Collections.unmodifiableList(stones);
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
+    public void setGrossWeight(double grossWeight) {
+        this.grossWeight = grossWeight;
+    }
+
+    public void setNetWeight(double netWeight) {
+        this.netWeight = netWeight;
+    }
+
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setStones(List<Gemstone> stones) {
+        this.stones = stones;
+    }
+
+    public Jewel(String serialNumber, String sku, double grossWeight, double netWeight, LocalDate releaseDate, List<Gemstone> stones) {
+        this.serialNumber = serialNumber;
+        this.sku = sku;
+        this.grossWeight = grossWeight;
+        this.netWeight = netWeight;
+        this.releaseDate = releaseDate;
+        this.stones = stones;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
 
     public double getGrossWeight() {
         return grossWeight;
@@ -88,13 +125,6 @@ public class Jewel {
         return releaseDate;
     }
 
-    public int getCountStones() {
-        int countStones = 0;
-        for (Gemstone stone : stones) {
-            countStones += stone.getCount();
-        }
-        return countStones;
-    }
 
     public double getCost(StockPrice stockPrice) {
         double result = 0;

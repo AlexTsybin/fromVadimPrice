@@ -20,7 +20,8 @@ public enum ShapeCut {
     SQUARE,
     KR_57,
     KR_17,
-    PEAR;
+    PEAR,
+    CABOCHON;
     private static Map<String, ShapeCut> variable;
 
     static {

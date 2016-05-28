@@ -26,7 +26,9 @@ public enum TypeStone {
     TOPAZ_LONDON,
     TOPAZ_SWISS,
     CHRYSOLITE,
-    CITRINE;
+    CITRINE,
+    BEARING,
+    PEARL;
 
     private static Map<String, TypeStone> variable = new HashMap<>();
 
@@ -52,7 +54,7 @@ public enum TypeStone {
 //        variable.put("цит",CITRINE);
 //        variable.put("цитрин",CITRINE);
 
-        variable = loadWords("src/main/resources/ex_typeStone.properties");
+        variable = loadWords("src/main/webapp/WEB-INF/ex_typeStone.properties");
 
     }
 

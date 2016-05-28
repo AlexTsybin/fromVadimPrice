@@ -10,10 +10,7 @@ import ru.uss.costprice.model.Jewel;
 import ru.uss.costprice.model.ShapeCut;
 import ru.uss.costprice.model.TypeStone;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -21,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by vadelic on 30.04.2016.
+ * Created by vadelic on 30.04.2016
  */
 public class Parser {
 
@@ -33,6 +30,7 @@ public class Parser {
         kindStone.add("swiss");
         kindStone.add("london");
         kindStone.add("lond");
+        kindStone.add("ск.");
         kindStone.add("");
     }
 
@@ -49,8 +47,6 @@ public class Parser {
                 .withSkipHeaderRecord(true));
 
         Map<String, List<Jewel>> jewelMap = new HashMap<>();
-        List<CSVRecord> incGemstone = new ArrayList<>();
-        List<CSVRecord> incSku = new ArrayList<>();
 
         for (CSVRecord rec : csvParser.getRecords()) {
             try {
@@ -61,12 +57,12 @@ public class Parser {
                     jewelMap.put(sku, new ArrayList<>());
                 }
                 jewelMap.get(sku).add(jewel);
+
             } catch (IncorrectFormatGemstone e) {
-                incGemstone.add(rec);
-                System.out.println(rec.get(5));
+                System.out.println(e.getMessage());
 
             } catch (IncorrectFormatSku e) {
-                incSku.add(rec);
+                e.printStackTrace();
             }
         }
 
@@ -79,29 +75,29 @@ public class Parser {
         Pattern pattern = Pattern.compile("\\d{2}-\\d{2}-.{2}\\d{2}-\\d{5}");
         Matcher matcher = pattern.matcher(line);
         if (!matcher.find())
-            throw new IncorrectFormatSku();
+            throw new IncorrectFormatSku(line);
         return matcher.group();
     }
 
     private static Jewel convertToJewel(CSVRecord record) throws IncorrectFormatGemstone, IncorrectFormatSku {
 
-        String sn = record.get(0);
+        String serialN = record.get(0);
         String sku = getSkuFromString(record.get(1));
 
-        double gross = Double.parseDouble(record.get(2).replace(',', '.'));
-        double net = Double.parseDouble(record.get(3).replace(',', '.'));
-        LocalDate date;
+        double grossWeight = Double.parseDouble(record.get(2).replace(',', '.'));
+        double netWeight = Double.parseDouble(record.get(3).replace(',', '.'));
+        LocalDate dateRealise;
         try {
-            date = LocalDate.parse(record.get(4).substring(0, 10), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            dateRealise = LocalDate.parse(record.get(4).substring(0, 10), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         } catch (Exception e) {
-            date = null;
+            dateRealise = null;
         }
-        String stones = record.get(5);
-        return new Jewel(sn, sku, gross, net, date, getListGemstoneInJewel(stones));
+        List<Gemstone> gemstoneList = getListGemstoneInJewel(record.get(5));
+        return new Jewel(serialN, sku, grossWeight, netWeight, dateRealise, gemstoneList);
 
     }
 
-    public static List<Gemstone> getListGemstoneInJewel(String line) throws IncorrectFormatGemstone {
+    private static List<Gemstone> getListGemstoneInJewel(String line) throws IncorrectFormatGemstone {
         List<Gemstone> result = new ArrayList<>();
         for (String s : line.trim().split(",")) {
             result.add(createStone(s));
@@ -110,16 +106,26 @@ public class Parser {
         return result;
     }
 
-    public static Gemstone createStone(String line) throws IncorrectFormatGemstone {
+    static Gemstone createStone(String line) throws IncorrectFormatGemstone {
+
         try {
 
-            List<String> listDescription = new ArrayList<>(Arrays.asList(line.trim().split(" ")));
+            List<String> listDescription = new ArrayList<>(Arrays.asList(line
+                    .replace("розовый ", "")
+                    .replace("белый ", "")
+                    .replace("черный ", "")
+                    .replace("культ ", "")
+                    .trim()
+                    .split(" ")));
             if (listDescription.size() == 4) return null;
 
 
             if (kindStone.contains(listDescription.get(2).toLowerCase())) {
                 listDescription.set(1, listDescription.get(1) + " " + listDescription.get(2));
                 listDescription.remove(2);
+            }
+            if (listDescription.get(1).equals("Подш ск.")) {
+                listDescription.add(2, "");
             }
 
             if (!listDescription.get(4).contains("/")) {
@@ -132,16 +138,25 @@ public class Parser {
             int count = getInt(listDescription.get(0));
             TypeStone type = TypeStone.getTypeStone(listDescription.get(1).toLowerCase().trim());
             ShapeCut cut = ShapeCut.getShapeCut(listDescription.get(2).toLowerCase().trim());
-            String size = listDescription.get(3);
+            double size = getSize(listDescription.get(3));
             String quality = listDescription.get(4);
             Double weightCt = getDouble(listDescription.get(5));
-
+            if (type == null)
+                throw new IncorrectFormatGemstone(line);
             return new Gemstone(count, type, cut, size, quality, weightCt);
         } catch (Exception e) {
-            throw new IncorrectFormatGemstone();
-//            System.out.println("GEM ERROR " + listDescription + line);
-//            return null;
+            throw new IncorrectFormatGemstone(line);
         }
+    }
+
+    private static double getSize(String s) {
+        double size = 0.0;
+        for (String st : s.split("\\*")) {
+            if (size < getDouble(st)) {
+                size = getDouble(st);
+            }
+        }
+        return size;
     }
 
     private static int getInt(String s) {

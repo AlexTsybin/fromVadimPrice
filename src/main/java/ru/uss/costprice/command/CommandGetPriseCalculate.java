@@ -1,9 +1,9 @@
 package ru.uss.costprice.command;
 
 import ru.uss.costprice.CmdHelper;
-import ru.uss.costprice.PriceManager;
 import ru.uss.costprice.exeptions.IncorrectFormatSku;
 import ru.uss.costprice.parsing.Parser;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,7 +15,6 @@ public class CommandGetPriseCalculate implements Command {
     public void execute() {
         Set<String> skuList = new HashSet<>();
         System.out.println("Enter list SKU. If nothing is entered - it will print all items");
-
         do {
             try {
                 String string = CmdHelper.readLine();
@@ -27,7 +26,12 @@ public class CommandGetPriseCalculate implements Command {
                 System.out.println("invalid SKU");
             }
         } while (true);
-        PriceManager.getInstance().printListSku(skuList);
+        if (!skuList.isEmpty()) {
+            // PriceManager.getInstance().printListSku(skuList);
+        } else{
+            System.out.println("request is empty");
+        }
+
 
     }
 }

@@ -16,6 +16,17 @@ import static ru.uss.costprice.CmdHelper.Operation.*;
  */
 
 public class CmdHelper {
+    //    10-02-1200-10333
+//    TODO http://stackoverflow.com/questions/5915425/programmatically-reading-static-resources-from-my-java-webapp
+    public static void main(String[] args) {
+        Operation operation;
+        do {
+            operation = CmdHelper.getOperation();
+            exec(operation);
+
+        } while (Operation.EXIT != operation);
+    }
+
      enum Operation {
         LOAD,
          PRINT_SERIAL_NUMBER_OF_SKU,
@@ -25,7 +36,7 @@ public class CmdHelper {
     private CmdHelper() {
     }
 
-    private static EnumMap<Operation, Command> allOperation = new EnumMap<>(CmdHelper.Operation.class);
+    private static EnumMap<Operation, Command> allOperation = new EnumMap<>(Operation.class);
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     static {
@@ -35,7 +46,7 @@ public class CmdHelper {
         allOperation.put(EXIT, null);
     }
 
-     static Operation getOperation() {
+     private static Operation getOperation() {
         int choose;
 
         while (true) {
@@ -57,7 +68,7 @@ public class CmdHelper {
         return Operation.values()[choose];
     }
 
-    static void exec(Operation operation) {
+    private static void exec(Operation operation) {
         Command cmd = allOperation.get(operation);
         if (cmd == null)
             System.out.println("Operation is disabled");
