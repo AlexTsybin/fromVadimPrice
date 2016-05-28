@@ -10,7 +10,7 @@ import java.util.Map;
 public class ShapeCutTest {
     @Test
     public void loadWords() throws Exception {
-        Map<String, ShapeCut> map = ShapeCut.loadWords("src/main/resources/ex_shapeCut.properties");
+        Map<String, ShapeCut> map = ShapeCut.loadWords("src/main/webapp/WEB-INF/ex_shapeCut.properties");
         System.out.println(map.keySet());
 
 

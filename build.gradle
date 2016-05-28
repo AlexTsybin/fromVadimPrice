@@ -3,12 +3,12 @@ apply plugin: 'idea'
 apply plugin: 'application'
 apply plugin: 'war'
 
-
 repositories {
     mavenCentral()
 }
 dependencies {
     compile "org.apache.commons:commons-csv:1.2"
     testCompile "junit:junit:4.12"
-    provideedCompile group: 'javax', name:'javaee-api',version:'7.0'
+    compile group: 'javax', name:'javaee-web-api',version:'7.0'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
 }
