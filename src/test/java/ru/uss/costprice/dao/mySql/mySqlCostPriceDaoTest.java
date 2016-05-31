@@ -3,25 +3,52 @@ package ru.uss.costprice.dao.mySql;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.uss.costprice.dao.CostPriceDao;
-import ru.uss.costprice.model.BasisCalculation;
+import ru.uss.costprice.model.*;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by Komyshenets on 28.05.2016.
  */
 public class MySqlCostPriceDaoTest {
     @Test
+    public void getPriceHistory() throws Exception {
+        List<StockPrice> result ;
+        MySqlDaoFactory factory = new MySqlDaoFactory();
+        try (Connection connection = factory.getConnection()) {
+            CostPriceDao dao = factory.getCostPriceDao(connection);
+            result = dao.getPriceHistory();
+        }
+        Assert.assertTrue(result.size()>0);
+    }
+
+    @Test
+    public void addJewel() {
+        boolean count = false;
+        MySqlDaoFactory factory = new MySqlDaoFactory();
+        try (Connection connection = factory.getConnection()) {
+            CostPriceDao dao = factory.getCostPriceDao(connection);
+
+            List<Gemstone> gem = new ArrayList<>();
+            gem.add(new Gemstone(1, TypeStone.AMETHYST, null, 1, null, 1.0));
+            count = dao.addJewel(new Jewel("test0", "sku", 1.0, 1.0, LocalDate.now(), gem));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Assert.assertTrue(count);
+    }
+
+    @Test
     public void getBasisSerial() throws Exception {
         List<BasisCalculation> result;
         MySqlDaoFactory factory = new MySqlDaoFactory();
         try (Connection connection = factory.getConnection()) {
             CostPriceDao dao = factory.getCostPriceDao(connection);
-            result = dao.getBasisSerial( "10-02-1200-10333");
+            result = dao.getBasisSerial("10-02-1200-10333");
         }
         Assert.assertEquals(result.size(), 3);
     }
