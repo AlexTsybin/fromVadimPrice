@@ -1,32 +1,63 @@
 package ru.uss.costprice.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by vadelic on 30.04.2016.
+ * Created by vadelic on 30.04.2016
  */
 public class Jewel {
     private String serialNumber;
     private String sku;
     private double grossWeight;
     private double netWeight;
-
-
     private LocalDate releaseDate;
     private List<Gemstone> stones;
 
-    public double getWeightPrecious() {
-        double precious = 0;
+    public Jewel(String serialNumber, String sku, double grossWeight, double netWeight, LocalDate releaseDate, List<Gemstone> stones) {
+        this.serialNumber = serialNumber;
+        this.sku = sku;
+        this.grossWeight = grossWeight;
+        this.netWeight = netWeight;
+        this.releaseDate = releaseDate;
+        this.stones = stones;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public double getGrossWeight() {
+        return grossWeight;
+    }
+
+    public double getNetWeight() {
+        return netWeight;
+    }
+
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
+
+    public List<Gemstone> getStones() {
+        if (stones != null)
+            return Collections.unmodifiableList(stones);
+        else return new ArrayList<>();
+    }
+
+    //==================================================
+    public int getCountStones() {
+        int countStones = 0;
         for (Gemstone stone : stones) {
-            if (stone.getType() == TypeStone.SAPPHIRE ||
-                    stone.getType() == TypeStone.RUBY ||
-                    stone.getType() == TypeStone.EMERALD) {
-                precious += stone.getWeightCt();
-            }
+            countStones += stone.getCount();
         }
-        return precious;
+        return countStones;
     }
 
     public double getWeightKr17() {
@@ -49,6 +80,18 @@ public class Jewel {
         return kr57;
     }
 
+    public double getWeightPrecious() {
+        double precious = 0;
+        for (Gemstone stone : stones) {
+            if (stone.getType() == TypeStone.SAPPHIRE ||
+                    stone.getType() == TypeStone.RUBY ||
+                    stone.getType() == TypeStone.EMERALD) {
+                precious += stone.getWeightCt();
+            }
+        }
+        return precious;
+    }
+
     public double getWeightKr57big() {
         double kr57b = 0;
         for (Gemstone stone : stones) {
@@ -58,73 +101,6 @@ public class Jewel {
         }
         return kr57b;
     }
-
-    public int getCountStones() {
-        int countStones = 0;
-        for (Gemstone stone : stones) {
-            countStones += stone.getCount();
-        }
-        return countStones;
-    }
-
-    public List<Gemstone> getStones() {
-        return Collections.unmodifiableList(stones);
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    public void setSku(String sku) {
-        this.sku = sku;
-    }
-
-    public void setGrossWeight(double grossWeight) {
-        this.grossWeight = grossWeight;
-    }
-
-    public void setNetWeight(double netWeight) {
-        this.netWeight = netWeight;
-    }
-
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public void setStones(List<Gemstone> stones) {
-        this.stones = stones;
-    }
-
-    public Jewel(String serialNumber, String sku, double grossWeight, double netWeight, LocalDate releaseDate, List<Gemstone> stones) {
-        this.serialNumber = serialNumber;
-        this.sku = sku;
-        this.grossWeight = grossWeight;
-        this.netWeight = netWeight;
-        this.releaseDate = releaseDate;
-        this.stones = stones;
-    }
-
-    public String getSku() {
-        return sku;
-    }
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-
-    public double getGrossWeight() {
-        return grossWeight;
-    }
-
-    public double getNetWeight() {
-        return netWeight;
-    }
-
-    public LocalDate getReleaseDate() {
-        return releaseDate;
-    }
-
 
     public double getCost(StockPrice stockPrice) {
         double result = 0;

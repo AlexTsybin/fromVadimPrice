@@ -3,6 +3,7 @@ package ru.uss.costprice;
 import ru.uss.costprice.command.Command;
 import ru.uss.costprice.command.CommandGetSerialOfSku;
 import ru.uss.costprice.command.CommandGetPriseCalculate;
+import ru.uss.costprice.command.CommandLoadCsv;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class CmdHelper {
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     static {
-        allOperation.put(LOAD, null);
+        allOperation.put(LOAD, new CommandLoadCsv());
         allOperation.put(PRINT_SERIAL_NUMBER_OF_SKU, new CommandGetSerialOfSku());
         allOperation.put(PRINT_LIST_SKU, new CommandGetPriseCalculate());
         allOperation.put(EXIT, null);

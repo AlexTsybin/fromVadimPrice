@@ -45,6 +45,7 @@ public class Gemstone {
     }
 
     public ShapeCut getCut() {
+
         return cut;
     }
 

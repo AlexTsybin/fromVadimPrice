@@ -1,4 +1,4 @@
-package ru.uss.costprice.parsing;
+package ru.uss.costprice;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -34,11 +34,12 @@ public class Parser {
         kindStone.add("");
     }
 
-    public static Map<String, List<Jewel>> getSkuFromCsv(InputStream is) throws IOException {
+    public static List<Jewel> getSkuFromCsv(InputStream is) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         CSVParser csvParser = new CSVParser(reader, CSVFormat
                 .newFormat(';')
-                .withHeader(new String[]{"﻿Серия номенклатуры",
+                .withHeader(new String[]{
+                        "﻿Серия номенклатуры",
                         "Номенклатура",
                         "Вес изделия",
                         "Вес металла в изделии",
@@ -46,43 +47,35 @@ public class Parser {
                         "Описание вставки"})
                 .withSkipHeaderRecord(true));
 
-        Map<String, List<Jewel>> jewelMap = new HashMap<>();
+        List<Jewel> jewelList = new ArrayList<>();
 
         for (CSVRecord rec : csvParser.getRecords()) {
             try {
                 Jewel jewel = convertToJewel(rec);
-                String sku = jewel.getSku();
-
-                if (!jewelMap.containsKey(sku)) {
-                    jewelMap.put(sku, new ArrayList<>());
-                }
-                jewelMap.get(sku).add(jewel);
-
-            } catch (IncorrectFormatGemstone e) {
+                jewelList.add(jewel);
+            } catch (IncorrectFormatGemstone | IncorrectFormatSku e) {
                 System.out.println(e.getMessage());
-
-            } catch (IncorrectFormatSku e) {
-                e.printStackTrace();
             }
         }
-
-        System.out.println("add " + jewelMap.size() + " items");
-        return jewelMap;
+        System.out.println("add " + jewelList.size() + " items");
+        return jewelList;
     }
 
-
-    public static String getSkuFromString(String line) throws IncorrectFormatSku {
+    public static List<String> getSkuFromString(String line) throws IncorrectFormatSku {
         Pattern pattern = Pattern.compile("\\d{2}-\\d{2}-.{2}\\d{2}-\\d{5}");
         Matcher matcher = pattern.matcher(line);
-        if (!matcher.find())
-            throw new IncorrectFormatSku(line);
-        return matcher.group();
+        List<String> result = new ArrayList<>();
+        while (matcher.find()) {
+            result.add(matcher.group());
+        }
+        if (result.isEmpty()) throw new IncorrectFormatSku("G: "+line);
+        return result;
     }
 
     private static Jewel convertToJewel(CSVRecord record) throws IncorrectFormatGemstone, IncorrectFormatSku {
 
         String serialN = record.get(0);
-        String sku = getSkuFromString(record.get(1));
+        String sku = getSkuFromString(record.get(1)).iterator().next();
 
         double grossWeight = Double.parseDouble(record.get(2).replace(',', '.'));
         double netWeight = Double.parseDouble(record.get(3).replace(',', '.'));
@@ -92,24 +85,22 @@ public class Parser {
         } catch (Exception e) {
             dateRealise = null;
         }
-        List<Gemstone> gemstoneList = getListGemstoneInJewel(record.get(5));
+        List<Gemstone> gemstoneList = createGemstoneList(record.get(5));
         return new Jewel(serialN, sku, grossWeight, netWeight, dateRealise, gemstoneList);
 
     }
 
-    private static List<Gemstone> getListGemstoneInJewel(String line) throws IncorrectFormatGemstone {
+    public static List<Gemstone> createGemstoneList(String line) throws IncorrectFormatGemstone {
         List<Gemstone> result = new ArrayList<>();
         for (String s : line.trim().split(",")) {
             result.add(createStone(s));
         }
-
         return result;
     }
 
-    static Gemstone createStone(String line) throws IncorrectFormatGemstone {
+    public static Gemstone createStone(String line) throws IncorrectFormatGemstone {
 
         try {
-
             List<String> listDescription = new ArrayList<>(Arrays.asList(line
                     .replace("розовый ", "")
                     .replace("белый ", "")
@@ -118,7 +109,6 @@ public class Parser {
                     .trim()
                     .split(" ")));
             if (listDescription.size() == 4) return null;
-
 
             if (kindStone.contains(listDescription.get(2).toLowerCase())) {
                 listDescription.set(1, listDescription.get(1) + " " + listDescription.get(2));

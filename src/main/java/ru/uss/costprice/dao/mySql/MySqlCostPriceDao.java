@@ -1,8 +1,11 @@
 package ru.uss.costprice.dao.mySql;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import ru.uss.costprice.dao.CostPriceDao;
 import ru.uss.costprice.model.BasisCalculation;
+import ru.uss.costprice.model.Gemstone;
 import ru.uss.costprice.model.Jewel;
+import ru.uss.costprice.model.StockPrice;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,17 +22,83 @@ class MySqlCostPriceDao implements CostPriceDao {
     }
 
     @Override
-    public void addJewel(Jewel jewel) {
+    public List<StockPrice> getPriceHistory() {
+        List<StockPrice> result = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM stok_price ORDER BY 'date' DESC")) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                StockPrice stockPrice = new StockPrice();
+                stockPrice.setDate(rs.getDate("date"));
+                stockPrice.setGold(rs.getDouble("gold"));
+                stockPrice.setUsd(rs.getDouble("usd"));
+                stockPrice.setKr17UsdPrice(rs.getDouble("kr_17"));
+                stockPrice.setKr57UsdPrice(rs.getDouble("kr_57"));
+                stockPrice.setKr57bigUsdPrice(rs.getDouble("kr_57b"));
+                stockPrice.setPreciousUsdPrice(rs.getDouble("prec"));
+                result.add(stockPrice);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
+        return result;
+    }
+
+    @Override
+    public boolean addJewel(Jewel jewel) throws SQLException {
+        connection.setAutoCommit(false);
+        try (PreparedStatement psJew = connection.prepareStatement(
+                "INSERT INTO `jewelry_factory`.`jewel_item`" +
+                        "(`serial_n`,`sku`,`date_release`,`w_net`,`w_gross`)" +
+                        "VALUES  (?,?,?,?,?)")
+        ) {
+            psJew.setString(1, jewel.getSerialNumber());
+            psJew.setString(2, jewel.getSku());
+            if (jewel.getReleaseDate() != null) {
+                psJew.setDate(3, Date.valueOf(jewel.getReleaseDate()));
+            } else {
+                psJew.setNull(3, Types.DATE);
+            }
+            psJew.setDouble(4, jewel.getNetWeight());
+            psJew.setDouble(5, jewel.getGrossWeight());
+            psJew.executeUpdate();
+
+            for (Gemstone gemstone : jewel.getStones()) {
+                try (PreparedStatement psGem = connection.prepareStatement(
+                        "INSERT INTO `jewelry_factory`.`gemstone_set`\n" +
+                                "(`s_n`,`count_stone`,`stone_id`,`shape_id`,`size`,`quality`,`weight`)\n" +
+                                "VALUES (?,?,?,?,?,?,?);")
+                ) {
+                    psGem.setString(1, jewel.getSerialNumber());
+                    psGem.setInt(2, gemstone.getCount());
+                    psGem.setInt(3, gemstone.getType().ordinal() + 1);
+                    if (gemstone.getCut() != null) {
+                        psGem.setInt(4, gemstone.getCut().ordinal() + 1);
+                    } else {
+                        psGem.setNull(4, Types.INTEGER);
+                    }
+                    psGem.setDouble(5, gemstone.getSize());
+                    psGem.setString(6, gemstone.getQuality());
+                    psGem.setDouble(7, gemstone.getWeightCt());
+                    psGem.executeUpdate();
+                }
+            }
+            connection.commit();
+            return true;
+        } catch (Exception e) {
+            connection.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            connection.setAutoCommit(true);
+        }
     }
 
     @Override
     public List<BasisCalculation> getBasisSerial(String serialN) {
         List<BasisCalculation> basisCalcList = new ArrayList<>();
-
-        try (PreparedStatement ps = connection.prepareStatement(getQuerySeriallist())) {
+        try (PreparedStatement ps = connection.prepareStatement(getQuerySerialList())) {
             ps.setString(1, serialN);
-
             ResultSet rs = ps.executeQuery();
             basisCalcList = parseResultSet(rs, "serial_n");
         } catch (SQLException e) {
@@ -68,7 +137,7 @@ class MySqlCostPriceDao implements CostPriceDao {
         return basisCalcList;
     }
 
-    private String getQuerySeriallist() {
+    private String getQuerySerialList() {
         return "SELECT \n" +
                 "date_release\n" +
                 ", serial_n\n" +
@@ -115,7 +184,7 @@ class MySqlCostPriceDao implements CostPriceDao {
     }
 
     String getQuerySkuList() {
-        return "select * FROM(\n" +
+        return "SELECT * FROM(\n" +
                 "SELECT \n" +
                 "sku\n" +
                 ", w_gross\n" +
@@ -162,9 +231,6 @@ class MySqlCostPriceDao implements CostPriceDao {
     }
 
     String flipArraySkuToLine(String... sku) {
-        String skuParametr = "\"" +
-                String.join("\",\"", sku) +
-                "\"";
-        return skuParametr;
+        return "\"" + String.join("\",\"", sku) + "\"";
     }
 }

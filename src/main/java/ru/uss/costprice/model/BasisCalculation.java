@@ -13,6 +13,18 @@ public class BasisCalculation {
     private double precious;
     private double KR_57b;
 
+    @Override
+    public String toString() {
+        return "id=" + id  +
+                ", w_gross=" + w_gross +
+                ", w_net=" + w_net +
+                ", count=" + count_stone +
+                ", KR_17=" + KR_17 +
+                ", KR_57s=" + KR_57s +
+                ", prec=" + precious +
+                ", KR_57b=" + KR_57b ;
+    }
+
     public String getId() {
         return id;
     }
@@ -76,4 +88,6 @@ public class BasisCalculation {
     public void setKR_57b(double KR_57b) {
         this.KR_57b = KR_57b;
     }
+
+
 }

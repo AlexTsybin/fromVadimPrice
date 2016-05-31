@@ -1,7 +1,7 @@
 //package ru.uss.costprice;
 //
 //import ru.uss.costprice.model.Jewel;
-//import ru.uss.costprice.parsing.Parser;
+//import ru.uss.costprice.Parser;
 //
 //import java.io.IOException;
 //import java.nio.file.Files;

@@ -6,7 +6,7 @@ import javax.swing.text.html.HTML;
 import java.io.IOException;
 
 /**
- * Created by Komyshenets on 21.05.2016.
+ * Created by Komyshenets on 21.05.2016
  */
 @javax.servlet.annotation.WebServlet(name = "ServletTest", urlPatterns = "/uss")
 public class ServletTest extends javax.servlet.http.HttpServlet {

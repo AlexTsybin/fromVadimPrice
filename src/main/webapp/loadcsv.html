@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Load CSV</title>
+</head>
+<body>
+<div>
+    <form action="/load" method="post" enctype="multipart/form-data">
+        <table>
+            <tr>
+                <td>Chose CSV-file for upload to DB</td>
+            </tr>
+            <tr>
+                <td><input type="file" name="csvPath" accept="text/csv"></td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="load CSV"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>
